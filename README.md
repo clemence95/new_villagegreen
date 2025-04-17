@@ -17,6 +17,7 @@ Développer des interfaces accessibles aux particuliers et aux professionnels
 Offrir une solution sécurisée, fiable et adaptée aux besoins de l'entreprise​
 
 🛠 Fonctionnalités
+
 🌐 Site Web
 Front-Office
 Consultation du catalogue (rubriques et sous-rubriques)
