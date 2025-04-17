@@ -145,29 +145,6 @@ Utilisation de Trello pour le suivi des tâches
 
 Planification des étapes sous forme de diagramme de Gantt​
 
-📂 Organisation typique du projet Symfony
-plaintext
-Copier
-Modifier
-bin/             # Scripts pour les commandes Symfony
-config/          # Configuration (routes, services, etc.)
-migrations/      # Scripts pour gérer les migrations de la base de données
-public/          # Fichiers accessibles (CSS, JS, images)
-src/             # Code source (contrôleurs, entités, etc.)
-  ├── Controller/  # Contrôleurs de l'application
-  ├── Entity/      # Entités pour la gestion des données
-  ├── Repository/  # Classes pour interagir avec la base de données
-  └── Service/     # Services pour la logique métier
-templates/       # Fichiers Twig pour le rendu des pages
-tests/           # Tests unitaires et fonctionnels
-translations/    # Fichiers pour la traduction
-var/             # Cache et logs
-vendor/          # Bibliothèques installées via Composer
-🐳 Compléments spécifiques Docker
-docker-compose.yaml : Configuration des conteneurs (PHP, MySQL...)
-
-Dockerfile : Fichier pour créer des conteneurs personnalisés​
-
 🔌 API
 Ajout des contrôleurs dans src/Controller/
 
