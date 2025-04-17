@@ -1,5 +1,7 @@
 🎵 Projet Fil Rouge CDA
-✨ Description
+
+✨ Description :
+
 Ce projet a pour objectif de développer une application e-commerce pour l’entreprise Village Green, spécialisée dans la distribution de matériel musical. Nous souhaitons moderniser leur système de gestion des commandes et de facturation pour optimiser leur workflow. Ce projet inclut :
 
 Un site web.
