@@ -125,14 +125,14 @@
 
 | Attribut               | Type         | Description                                      | Contraintes                          |
 |------------------------|--------------|--------------------------------------------------|--------------------------------------|
-| id                     | INT          | Identifiant unique                              | PK, Auto-incrémenté                  |
-| client_id              | INT          | Lien vers le client                             | FK → Client(id)                      |
-| date_commande          | DATE         | Date de la commande                             | Obligatoire                          |
-| reduction              | DECIMAL(5,2) | Réduction en % (professionnels uniquement)      | Optionnel, 0–100                     |
-| mode_paiement          | ENUM         | Mode de règlement                               | 'carte', 'virement', 'chèque'        |
-| statut_paiement        | ENUM         | Paiement effectué ou différé                    | 'payé', 'en attente'                 |
-| adresse_facturation_id | INT          | Adresse de facturation                          | FK → Adresse(id)                     |
-| adresse_livraison_id   | INT          | Adresse de livraison                            | FK → Adresse(id)                     |
+| id                     | INT          | Identifiant unique                               | PK, Auto-incrémenté                  |
+| client_id              | INT          | Lien vers le client                              | FK → Client(id)                      |
+| date_commande          | DATE         | Date de la commande                              | Obligatoire                          |
+| reduction              | DECIMAL(5,2) | Réduction en % (professionnels uniquement)       | Optionnel, 0–100                     |
+| mode_paiement          | ENUM         | Mode de règlement                                | 'carte', 'virement', 'chèque'        |
+| statut_paiement        | ENUM         | Paiement effectué ou différé                     | 'payé', 'en attente'                 |
+| adresse_facturation_id | INT          | Adresse de facturation                           | FK → Adresse(id)                     |
+| adresse_livraison_id   | INT          | Adresse de livraison                             | FK → Adresse(id)                     |
 
 ---
 
@@ -140,13 +140,13 @@
 
 <!-- LigneCommande : Détail des produits commandés -->
 
-| Attribut         | Type         | Description                             | Contraintes                    |
-|------------------|--------------|-----------------------------------------|--------------------------------|
-| id               | INT          | Identifiant unique                      | PK, Auto-incrémenté            |
-| commande_id      | INT          | Commande associée                       | FK → Commande(id)              |
-| produit_id       | INT          | Produit concerné                        | FK → Produit(id)               |
-| quantite         | INT          | Quantité commandée                      | ≥ 1                            |
-| prix_unitaire_ht | DECIMAL(10,2)| Prix unitaire HT au moment de la commande | Obligatoire                   |
+| Attribut         | Type         | Description                               | Contraintes                    |
+|------------------|--------------|-------------------------------------------|--------------------------------|
+| id               | INT          | Identifiant unique                        | PK, Auto-incrémenté            |
+| commande_id      | INT          | Commande associée                         | FK → Commande(id)              |
+| produit_id       | INT          | Produit concerné                          | FK → Produit(id)               |
+| quantite         | INT          | Quantité commandée                        | ≥ 1                            |
+| prix_unitaire_ht | DECIMAL(10,2)| Prix unitaire HT au moment de la commande | Obligatoire                    |
 
 ---
 
@@ -158,7 +158,7 @@
 |------------------|--------------|----------------------------------------------|--------------------------------------|
 | id               | INT          | Identifiant unique du document               | PK, Auto-incrémenté                  |
 | commande_id      | INT          | Commande liée au document                    | FK → Commande(id)                    |
-| type_document    | ENUM         | Type de document                             | 'facture', 'bon_livraison'          |
+| type_document    | ENUM         | Type de document                             | 'facture', 'bon_livraison'           |
 | date_creation    | DATE         | Date de création du document                 | Obligatoire                          |
 | chemin_fichier   | VARCHAR(255) | Chemin ou nom du fichier stocké              | Obligatoire                          |
 
