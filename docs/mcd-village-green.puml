@@ -1,0 +1,105 @@
+@startuml MCD_Village_Green
+
+'=====================
+' ENTITÉS PRINCIPALES
+'=====================
+
+!define table(x) class x << (T,#FFAAAA) >>
+
+' Entité Categorie (incluant les sous-catégories en elle-même)
+table(Categorie) {
+    +id : INT
+    +nom : VARCHAR(100)
+    +parent_id : INT
+    +niveau : INT
+}
+
+' Entité Produit
+table(Produit) {
+    +id : INT
+    +libelle_court : VARCHAR(100)
+    +libelle_long : TEXT
+    +reference_fournisseur : VARCHAR(50)
+    +prix_achat_ht : DECIMAL(10,2)
+    +stock : INT
+    +photo : VARCHAR(255)
+    +actif : BOOLEAN
+    +categorie_id : INT
+    +fournisseur_id : INT
+}
+
+' Entité Fournisseur
+table(Fournisseur) {
+    +id : INT
+    +nom : VARCHAR(100)
+    +contact : VARCHAR(100)
+    +email : VARCHAR(100)
+    +telephone : VARCHAR(20)
+}
+
+' Entité Utilisateur
+table(Utilisateur) {
+    +id : INT
+    +nom : VARCHAR(100)
+    +email : VARCHAR(100)
+    +role : ENUM('Responsable Produits', 'Responsable Fournisseurs', 'Commercial Particuliers', 'Commercial Professionnels')
+    +type_client : ENUM('particulier', 'professionnel')
+    +reference_client : VARCHAR(50)
+    +coefficient : DECIMAL(3,2)
+}
+
+' Entité Adresse
+table(Adresse) {
+    +id : INT
+    +utilisateur_id : INT
+    +type_adresse : ENUM('facturation', 'livraison')
+    +rue : VARCHAR(255)
+    +code_postal : VARCHAR(10)
+    +ville : VARCHAR(100)
+    +pays : VARCHAR(100)
+}
+
+' Entité Commande
+table(Commande) {
+    +id : INT
+    +utilisateur_id : INT
+    +date_commande : DATE
+    +reduction : DECIMAL(5,2)
+    +mode_paiement : ENUM('carte', 'virement', 'chèque')
+    +statut_paiement : ENUM('payé', 'en attente')
+    +adresse_facturation_id : INT
+    +adresse_livraison_id : INT
+}
+
+' Entité LigneCommande
+table(LigneCommande) {
+    +id : INT
+    +commande_id : INT
+    +produit_id : INT
+    +quantite : INT
+    +prix_unitaire_ht : DECIMAL(10,2)
+}
+
+' Entité Document
+table(Document) {
+    +id : INT
+    +commande_id : INT
+    +type_document : ENUM('facture', 'bon_livraison')
+    +date_creation : DATE
+    +chemin_fichier : VARCHAR(255)
+    +statut : ENUM('en_attente', 'validé', 'archivé')
+}
+
+' Relations entre les entités
+Categorie "1" -- "0..*" Categorie : parent_id
+Categorie "1" -- "0..*" Produit : categorie_id
+Produit "1" -- "1" Fournisseur : fournisseur_id
+Utilisateur "1" -- "0..*" Adresse : utilisateur_id
+Utilisateur "1" -- "0..*" Commande : utilisateur_id
+Commande "1" -- "0..*" LigneCommande : commande_id
+LigneCommande "1" -- "1" Produit : produit_id
+Commande "1" -- "1" Adresse : adresse_facturation_id
+Commande "1" -- "1" Adresse : adresse_livraison_id
+Commande "1" -- "0..*" Document : commande_id
+
+@enduml
