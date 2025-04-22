@@ -1,15 +1,11 @@
 # Dictionnaire de données – Projet Village Green
 
-<!-- Ce fichier regroupe toutes les données utiles pour modéliser la base de données du projet Village Green -->
-
 ## 📌 Sommaire
 
 - [🛍️ Produit](#️-produit)
-- [📂 Rubrique](#-rubrique)
-- [📁 SousRubrique](#-sousrubrique)
+- [📂 Categorie](#-categorie)
 - [🚚 Fournisseur](#-fournisseur)
-- [👤 Client](#-client)
-- [🧑‍💼 Commercial](#-commercial)
+- [👤 Utilisateur](#-utilisateur)
 - [🏠 Adresse](#-adresse)
 - [🛒 Commande](#-commande)
 - [📦 LigneCommande](#-lignecommande)
@@ -19,8 +15,6 @@
 ---
 
 ## 🛍️ Produit
-
-<!-- Produit : Éléments du catalogue vendus aux clients -->
 
 | Attribut              | Type         | Description                                                  | Contraintes                        |
 |-----------------------|--------------|--------------------------------------------------------------|------------------------------------|
@@ -32,37 +26,26 @@
 | photo                 | VARCHAR(255) | Chemin ou URL de l'image du produit                          | Optionnel                          |
 | stock                 | INT          | Quantité disponible en stock                                 | ≥ 0                                |
 | actif                 | BOOLEAN      | Produit actif ou désactivé                                   | true / false                       |
-| sous_rubrique_id      | INT          | Lien vers la sous-rubrique                                   | FK → SousRubrique(id)             |
+| categorie_id          | INT          | Lien vers la catégorie ou sous-catégorie                     | FK → Categorie(id)                 |
 | fournisseur_id        | INT          | Lien vers le fournisseur                                     | FK → Fournisseur(id)              |
 
 ---
 
-## 📂 Rubrique
+## 📂 Categorie
 
-<!-- Rubrique : Catégorie principale de produits -->
+| Attribut    | Type         | Description                                              | Contraintes                            |
+|-------------|--------------|----------------------------------------------------------|----------------------------------------|
+| id          | INT          | Identifiant unique                                       | PK, Auto-incrémenté                    |
+| nom         | VARCHAR(100) | Nom de la catégorie ou sous-catégorie                    | Obligatoire                            |
+| parent_id   | INT          | Référence à la catégorie parente (null si racine)        | FK → Categorie(id), optionnel          |
+| niveau      | INT          | Niveau hiérarchique dans la structure (ex : 0, 1, 2...)  | ≥ 0, facultatif mais utile             |
 
-| Attribut     | Type         | Description                        | Contraintes              |
-|--------------|--------------|------------------------------------|--------------------------|
-| id           | INT          | Identifiant unique                 | PK, Auto-incrémenté      |
-| nom          | VARCHAR(100) | Nom de la rubrique                 | Obligatoire              |
-
----
-
-## 📁 SousRubrique
-
-<!-- SousRubrique : Sous-catégorie associée à une rubrique -->
-
-| Attribut      | Type         | Description                            | Contraintes                       |
-|---------------|--------------|----------------------------------------|-----------------------------------|
-| id            | INT          | Identifiant unique                     | PK, Auto-incrémenté               |
-| nom           | VARCHAR(100) | Nom de la sous-rubrique                | Obligatoire                       |
-| rubrique_id   | INT          | Lien vers la rubrique parente          | FK → Rubrique(id)                 |
+> ⚠️ Une catégorie sans `parent_id` est une **rubrique principale**.  
+> Une catégorie avec `parent_id` est une **sous-rubrique**.
 
 ---
 
 ## 🚚 Fournisseur
-
-<!-- Fournisseur : Fournisseur exclusif des produits -->
 
 | Attribut      | Type          | Description                          | Contraintes                   |
 |---------------|---------------|--------------------------------------|-------------------------------|
@@ -74,59 +57,41 @@
 
 ---
 
-## 👤 Client
+## 👤 Utilisateur
 
-<!-- Client : Acheteur du catalogue (pro ou particulier) -->
-
-| Attribut           | Type          | Description                                      | Contraintes                               |
-|--------------------|---------------|--------------------------------------------------|-------------------------------------------|
-| id                 | INT           | Identifiant client                               | PK, Auto-incrémenté                       |
-| nom                | VARCHAR(100)  | Nom ou raison sociale                            | Obligatoire                               |
-| type_client        | ENUM          | Particulier ou Professionnel                     | 'particulier', 'professionnel'            |
-| email              | VARCHAR(100)  | Email du client                                  | Format email, unique                      |
-| reference_client   | VARCHAR(50)   | Référence unique attribuée au client             | Obligatoire, unique                       |
-| coefficient        | DECIMAL(3,2)  | Coefficient de vente appliqué                    | ≥ 1.00                                    |
-| commercial_id      | INT           | Commercial attribué                              | FK → Commercial(id)                       |
-
----
-
-## 🧑‍💼 Commercial
-
-<!-- Commercial : Conseiller commercial affecté au client -->
-
-| Attribut                | Type          | Description                                  | Contraintes                |
-|-------------------------|---------------|----------------------------------------------|----------------------------|
-| id                      | INT           | Identifiant unique                           | PK, Auto-incrémenté        |
-| nom                     | VARCHAR(100)  | Nom du commercial                            | Obligatoire                |
-| email                   | VARCHAR(100)  | Email professionnel                          | Obligatoire, format email  |
-| specialise_particuliers | BOOLEAN       | Gère exclusivement les clients particuliers  | true / false               |
+| Attribut         | Type          | Description                                     | Contraintes                                |
+|------------------|---------------|-------------------------------------------------|--------------------------------------------|
+| id               | INT           | Identifiant utilisateur                         | PK, Auto-incrémenté                         |
+| nom              | VARCHAR(100)  | Nom ou raison sociale                           | Obligatoire                                 |
+| email            | VARCHAR(100)  | Email                                           | Format email, unique                        |
+| reference        | VARCHAR(50)   | Référence interne                               | Obligatoire, unique                         |
+| role             | ENUM          | Rôle dans le système                            | 'client_particulier', 'client_pro', 'commercial' |
+| coefficient      | DECIMAL(3,2)  | Coefficient de vente appliqué (clients)         | ≥ 1.00, null si commercial                  |
+| specialise_particuliers | BOOLEAN | Spécialisation client particulier (commerciaux) | null si client                              |
+| commercial_id    | INT           | Commercial référent (clients uniquement)        | FK → Utilisateur(id), optionnel             |
 
 ---
 
 ## 🏠 Adresse
 
-<!-- Adresse : Lieu de livraison ou facturation -->
-
-| Attribut      | Type          | Description                                  | Contraintes                      |
-|---------------|---------------|----------------------------------------------|----------------------------------|
-| id            | INT           | Identifiant unique                           | PK, Auto-incrémenté              |
-| client_id     | INT           | Client concerné                              | FK → Client(id)                  |
-| type_adresse  | ENUM          | Type d’adresse                               | 'facturation', 'livraison'       |
-| rue           | VARCHAR(255)  | Rue                                          | Obligatoire                      |
-| code_postal   | VARCHAR(10)   | Code postal                                  | Obligatoire                      |
-| ville         | VARCHAR(100)  | Ville                                        | Obligatoire                      |
-| pays          | VARCHAR(100)  | Pays                                         | Obligatoire                      |
+| Attribut       | Type          | Description                                  | Contraintes                      |
+|----------------|---------------|----------------------------------------------|----------------------------------|
+| id             | INT           | Identifiant unique                           | PK, Auto-incrémenté              |
+| utilisateur_id | INT           | Utilisateur concerné                         | FK → Utilisateur(id)             |
+| type_adresse   | ENUM          | Type d’adresse                               | 'facturation', 'livraison'       |
+| rue            | VARCHAR(255)  | Rue                                          | Obligatoire                      |
+| code_postal    | VARCHAR(10)   | Code postal                                  | Obligatoire                      |
+| ville          | VARCHAR(100)  | Ville                                        | Obligatoire                      |
+| pays           | VARCHAR(100)  | Pays                                         | Obligatoire                      |
 
 ---
 
 ## 🛒 Commande
 
-<!-- Commande : Regroupe les produits achetés -->
-
 | Attribut               | Type         | Description                                      | Contraintes                          |
 |------------------------|--------------|--------------------------------------------------|--------------------------------------|
 | id                     | INT          | Identifiant unique                               | PK, Auto-incrémenté                  |
-| client_id              | INT          | Lien vers le client                              | FK → Client(id)                      |
+| utilisateur_id         | INT          | Lien vers le client                              | FK → Utilisateur(id)                |
 | date_commande          | DATE         | Date de la commande                              | Obligatoire                          |
 | reduction              | DECIMAL(5,2) | Réduction en % (professionnels uniquement)       | Optionnel, 0–100                     |
 | mode_paiement          | ENUM         | Mode de règlement                                | 'carte', 'virement', 'chèque'        |
@@ -137,8 +102,6 @@
 ---
 
 ## 📦 LigneCommande
-
-<!-- LigneCommande : Détail des produits commandés -->
 
 | Attribut         | Type         | Description                               | Contraintes                    |
 |------------------|--------------|-------------------------------------------|--------------------------------|
@@ -152,8 +115,6 @@
 
 ## 📄 Document
 
-<!-- Document : Pièces jointes liées à une commande -->
-
 | Attribut         | Type         | Description                                  | Contraintes                          |
 |------------------|--------------|----------------------------------------------|--------------------------------------|
 | id               | INT          | Identifiant unique du document               | PK, Auto-incrémenté                  |
@@ -162,16 +123,15 @@
 | date_creation    | DATE         | Date de création du document                 | Obligatoire                          |
 | chemin_fichier   | VARCHAR(255) | Chemin ou nom du fichier stocké              | Obligatoire                          |
 
-> ⚠️ **Tous les documents doivent être conservés pendant 3 ans.**
+> ⚠️ Tous les documents doivent être conservés pendant 3 ans.
 
 ---
 
 ## 📝 Notes générales
 
-<!-- Infos utiles concernant la gestion métier -->
+- **Prix de vente** : Prix d'achat × coefficient (client).
+- **Réductions** : Appliquées uniquement aux clients professionnels.
+- **Livraisons** : Une commande peut être livrée partiellement.
+- **Facturation** : Une facture par commande, même si livraison partielle.
 
-- **Calcul du prix de vente** : Le prix de vente est calculé à partir du prix d'achat en appliquant un coefficient spécifique au client.
-- **Réductions commerciales** : Possibles uniquement pour les clients professionnels et gérées par le commercial.
-- **Facturation** : Une commande partiellement livrée est totalement facturée. Une facture ne concerne qu'une seule commande.
-- **Livraison** : Une commande peut donner lieu à plusieurs bons de livraison (expéditions multiples).
 
