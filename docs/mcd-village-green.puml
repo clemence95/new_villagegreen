@@ -90,16 +90,56 @@ table(Document) {
     +statut : ENUM('en_attente', 'validé', 'archivé')
 }
 
+'===========================
 ' Relations entre les entités
+'===========================
+
+' Relation entre Categorie et Categorie (pour sous-catégories)
 Categorie "1" -- "0..*" Categorie : parent_id
+' Une catégorie peut avoir plusieurs sous-catégories (relation "1-N").
+' Chaque sous-catégorie a une catégorie parente, mais une catégorie parente peut ne pas en avoir.
+
+' Relation entre Categorie et Produit
 Categorie "1" -- "0..*" Produit : categorie_id
+' Une catégorie peut être liée à plusieurs produits (relation "1-N").
+' Chaque produit appartient à une seule catégorie.
+
+' Relation entre Produit et Fournisseur
 Produit "1" -- "1" Fournisseur : fournisseur_id
+' Un produit est fourni par un seul fournisseur (relation "1-1").
+' Un fournisseur peut fournir plusieurs produits.
+
+' Relation entre Utilisateur et Adresse
 Utilisateur "1" -- "0..*" Adresse : utilisateur_id
+' Un utilisateur peut avoir plusieurs adresses (relation "1-0..N").
+' Chaque adresse est liée à un utilisateur, mais un utilisateur peut ne pas avoir d'adresse.
+
+' Relation entre Utilisateur et Commande
 Utilisateur "1" -- "0..*" Commande : utilisateur_id
+' Un utilisateur peut passer plusieurs commandes (relation "1-0..N").
+' Chaque commande est passée par un utilisateur spécifique.
+
+' Relation entre Commande et LigneCommande
 Commande "1" -- "0..*" LigneCommande : commande_id
+' Une commande peut contenir plusieurs lignes de commande (relation "1-N").
+' Chaque ligne de commande est associée à une commande spécifique.
+
+' Relation entre LigneCommande et Produit
 LigneCommande "1" -- "1" Produit : produit_id
+' Une ligne de commande est liée à un seul produit (relation "1-1").
+' Un produit peut apparaître dans plusieurs lignes de commande.
+
+' Relation entre Commande et Adresse de facturation
 Commande "1" -- "1" Adresse : adresse_facturation_id
+' Chaque commande doit avoir une adresse de facturation unique (relation "1-1").
+
+' Relation entre Commande et Adresse de livraison
 Commande "1" -- "1" Adresse : adresse_livraison_id
+' Chaque commande doit avoir une adresse de livraison unique (relation "1-1").
+
+' Relation entre Commande et Document
 Commande "1" -- "0..*" Document : commande_id
+' Une commande peut avoir plusieurs documents associés (factures, bons de livraison) (relation "1-N").
+' Chaque document est lié à une commande spécifique.
 
 @enduml
