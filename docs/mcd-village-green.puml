@@ -1,12 +1,12 @@
 @startuml MCD_Village_Green
 
+!define table(x) class x << (T,#FFAAAA) >>
+
 '=====================
 ' ENTITÉS PRINCIPALES
 '=====================
 
-!define table(x) class x << (T,#FFAAAA) >>
-
-' Entité Categorie (incluant les sous-catégories en elle-même)
+' Représente les catégories de produits, avec possibilité de sous-catégories (relation récursive)
 table(Categorie) {
     +id : INT
     +nom : VARCHAR(100)
@@ -14,21 +14,21 @@ table(Categorie) {
     +niveau : INT
 }
 
-' Entité Produit
+' Représente les produits vendus par le site
 table(Produit) {
     +id : INT
-    +libelle_court : VARCHAR(100)
-    +libelle_long : TEXT
-    +reference_fournisseur : VARCHAR(50)
-    +prix_achat_ht : DECIMAL(10,2)
-    +stock : INT
-    +photo : VARCHAR(255)
-    +actif : BOOLEAN
-    +categorie_id : INT
-    +fournisseur_id : INT
+    +libelle_court : VARCHAR(100)      ' Nom court du produit
+    +libelle_long : TEXT               ' Description détaillée
+    +reference_fournisseur : VARCHAR(50) ' Référence chez le fournisseur
+    +prix_achat_ht : DECIMAL(10,2)     ' Prix d’achat hors taxes
+    +stock : INT                       ' Quantité disponible
+    +photo : VARCHAR(255)             ' Chemin de l’image du produit
+    +actif : BOOLEAN                  ' Produit actif ou non
+    +categorie_id : INT               ' Référence à la catégorie
+    +fournisseur_id : INT             ' Référence au fournisseur exclusif
 }
 
-' Entité Fournisseur
+' Représente les fournisseurs (constructeurs ou importateurs)
 table(Fournisseur) {
     +id : INT
     +nom : VARCHAR(100)
@@ -37,18 +37,18 @@ table(Fournisseur) {
     +telephone : VARCHAR(20)
 }
 
-' Entité Utilisateur
+' Représente les utilisateurs du site (clients ou membres du staff)
 table(Utilisateur) {
     +id : INT
     +nom : VARCHAR(100)
     +email : VARCHAR(100)
     +role : ENUM('Responsable Produits', 'Responsable Fournisseurs', 'Commercial Particuliers', 'Commercial Professionnels')
-    +type_client : ENUM('particulier', 'professionnel')
-    +reference_client : VARCHAR(50)
-    +coefficient : DECIMAL(3,2)
+    +type_client : ENUM('particulier', 'professionnel') ' Indique le type de client
+    +reference_client : VARCHAR(50)      ' Référence attribuée
+    +coefficient : DECIMAL(3,2)          ' Coefficient de vente (clients pro)
 }
 
-' Entité Adresse
+' Représente les adresses liées à un utilisateur (facturation ou livraison)
 table(Adresse) {
     +id : INT
     +utilisateur_id : INT
@@ -59,7 +59,7 @@ table(Adresse) {
     +pays : VARCHAR(100)
 }
 
-' Entité Commande
+' Représente une commande passée par un utilisateur
 table(Commande) {
     +id : INT
     +utilisateur_id : INT
@@ -71,7 +71,7 @@ table(Commande) {
     +adresse_livraison_id : INT
 }
 
-' Entité LigneCommande
+' Représente un produit commandé (avec quantité et prix)
 table(LigneCommande) {
     +id : INT
     +commande_id : INT
@@ -80,7 +80,7 @@ table(LigneCommande) {
     +prix_unitaire_ht : DECIMAL(10,2)
 }
 
-' Entité Document
+' Représente un document généré à partir d’une commande (facture ou bon de livraison)
 table(Document) {
     +id : INT
     +commande_id : INT
@@ -91,55 +91,40 @@ table(Document) {
 }
 
 '===========================
-' Relations entre les entités
+' RELATIONS AVEC COMMENTAIRES
 '===========================
 
-' Relation entre Categorie et Categorie (pour sous-catégories)
-Categorie "1" -- "0..*" Categorie : parent_id
-' Une catégorie peut avoir plusieurs sous-catégories (relation "1-N").
-' Chaque sous-catégorie a une catégorie parente, mais une catégorie parente peut ne pas en avoir.
+Categorie "1" -- "0..*" Categorie : contient
+' Une catégorie peut avoir plusieurs sous-catégories.
+' Chaque sous-catégorie a une seule catégorie parente.
 
-' Relation entre Categorie et Produit
-Categorie "1" -- "0..*" Produit : categorie_id
-' Une catégorie peut être liée à plusieurs produits (relation "1-N").
+Categorie "1" -- "0..*" Produit : classe
+' Une catégorie regroupe plusieurs produits.
 ' Chaque produit appartient à une seule catégorie.
 
-' Relation entre Produit et Fournisseur
-Produit "1" -- "1" Fournisseur : fournisseur_id
-' Un produit est fourni par un seul fournisseur (relation "1-1").
-' Un fournisseur peut fournir plusieurs produits.
+Produit "1" -- "1" Fournisseur : est fourni par
+' Chaque produit est fourni exclusivement par un fournisseur.
 
-' Relation entre Utilisateur et Adresse
-Utilisateur "1" -- "0..*" Adresse : utilisateur_id
-' Un utilisateur peut avoir plusieurs adresses (relation "1-0..N").
-' Chaque adresse est liée à un utilisateur, mais un utilisateur peut ne pas avoir d'adresse.
+Utilisateur "1" -- "0..*" Adresse : possède
+' Un utilisateur peut avoir plusieurs adresses de facturation ou de livraison.
 
-' Relation entre Utilisateur et Commande
-Utilisateur "1" -- "0..*" Commande : utilisateur_id
-' Un utilisateur peut passer plusieurs commandes (relation "1-0..N").
-' Chaque commande est passée par un utilisateur spécifique.
+Utilisateur "1" -- "0..*" Commande : passe
+' Un utilisateur peut passer plusieurs commandes.
 
-' Relation entre Commande et LigneCommande
-Commande "1" -- "0..*" LigneCommande : commande_id
-' Une commande peut contenir plusieurs lignes de commande (relation "1-N").
-' Chaque ligne de commande est associée à une commande spécifique.
+Commande "1" -- "0..*" LigneCommande : contient
+' Une commande contient plusieurs lignes (produits commandés).
 
-' Relation entre LigneCommande et Produit
-LigneCommande "1" -- "1" Produit : produit_id
-' Une ligne de commande est liée à un seul produit (relation "1-1").
-' Un produit peut apparaître dans plusieurs lignes de commande.
+LigneCommande "1" -- "1" Produit : concerne
+' Une ligne commande un seul produit.
+' Un produit peut apparaître dans plusieurs lignes.
 
-' Relation entre Commande et Adresse de facturation
-Commande "1" -- "1" Adresse : adresse_facturation_id
-' Chaque commande doit avoir une adresse de facturation unique (relation "1-1").
+Commande "1" -- "1" Adresse : utilise pour facturation
+' Chaque commande a une adresse de facturation.
 
-' Relation entre Commande et Adresse de livraison
-Commande "1" -- "1" Adresse : adresse_livraison_id
-' Chaque commande doit avoir une adresse de livraison unique (relation "1-1").
+Commande "1" -- "1" Adresse : utilise pour livraison
+' Chaque commande a une adresse de livraison.
 
-' Relation entre Commande et Document
-Commande "1" -- "0..*" Document : commande_id
-' Une commande peut avoir plusieurs documents associés (factures, bons de livraison) (relation "1-N").
-' Chaque document est lié à une commande spécifique.
+Commande "1" -- "0..*" Document : génère
+' Une commande peut générer plusieurs documents (facture, bon de livraison).
 
 @enduml
