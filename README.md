@@ -56,13 +56,13 @@ L'objectif est de moderniser leur système de gestion des commandes et de factur
 
 - **Langage** : PHP  
 - **Framework** : Symfony  
-- **Base de données** : MySQL  
+- **Base de données** : PostgreSQL  
 - **Authentification API** : JWT pour sécuriser les échanges
 
 ### Conteneurs Docker :
 
 - 🐳 Conteneur PHP pour l'exécution du site  
-- 🐳 Conteneur MySQL pour la base de données  
+- 🐳 Conteneur PostgreSQL pour la base de données  
 - 🐳 Conteneur Mailhog pour l'envoi/réception d'emails
 
 ---
